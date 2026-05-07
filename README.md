@@ -17,7 +17,7 @@ make
 ## Пример
 
 ```
-./word_counter_bin dictionary.txt
+./counter dictionary5000.txt
 ```
 
 ## Очистка
