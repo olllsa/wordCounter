@@ -120,7 +120,6 @@ int can_type_word(const char *word)
 void process_block(void *arg)
 {
     task_data_t *task_data = (task_data_t *)arg;
-
     word_block_t *block = task_data->block;
     consumer_args_t *args = task_data->args;
 
@@ -128,20 +127,46 @@ void process_block(void *arg)
     clock_gettime(CLOCK_MONOTONIC, &start);
 
     char **local_results = malloc(block->count * sizeof(char*));
+    if (!local_results)
+    {
+        // handle error
+        for (int i = 0; i < block->count; i++)
+        {
+            free(block->words[i]);
+        }
+        free(block->words);
+        free(block);
+        free(task_data);
+        return;
+    }
 
     int local_word_count = 0;
-
     for (int i = 0; i < block->count; i++)
     {
         if (can_type_word(block->words[i]))
         {
             local_results[local_word_count] = strdup(block->words[i]);
+            if (!local_results[local_word_count])
+            {
+                for (int j = 0; j < local_word_count; j++)
+                {
+                    free(local_results[j]);
+                }
+                free(local_results);
+                for (int i = 0; i < block->count; i++)
+                {
+                    free(block->words[i]);
+                }
+                free(block->words);
+                free(block);
+                free(task_data);
+                return;
+            }
             local_word_count++;
         }
     }
 
     clock_gettime(CLOCK_MONOTONIC, &end);
-
     double elapsed = (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / 1e9;
 
     pthread_mutex_lock(args->result_mutex);
@@ -159,12 +184,29 @@ void process_block(void *arg)
             *(args->result_count) = new_total;
             *(args->total_count) += local_word_count;
             *(args->timing_count) += elapsed;
+        } else // realloc failed: need to free local_results strings and array
+        {
+
+            for (int i = 0; i < local_word_count; i++)
+            {
+                free(local_results[i]);
+            }
+            free(local_results);
+
+            pthread_mutex_unlock(args->result_mutex);
+
+            for (int i = 0; i < block->count; i++)
+            {
+                free(block->words[i]);
+            }
+            free(block->words);
+            free(block);
+            free(task_data);
+            return;
         }
     }
-    else
-    {
-        free(local_results);
-    }
+    // Free local_results array (but not the strings, because they are now in global array)
+    free(local_results);
     pthread_mutex_unlock(args->result_mutex);
 
     for (int i = 0; i < block->count; i++)
