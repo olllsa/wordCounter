@@ -108,117 +108,6 @@ int can_type_word(const char *word)
 }
 
 /**
- * @brief Processes a block of words in a worker thread
- *
- * This function is executed by worker threads from the thread pool.
- * It filters typable words from the given block, measures processing time,
- * and safely merges local results into the global result array using a mutex.
- * All allocated memory for the block and task is freed after processing.
- *
- * @param arg - pointer to task_data_t containing the word block and consumer arguments
- */
-void process_block(void *arg)
-{
-    task_data_t *task_data = (task_data_t *)arg;
-    word_block_t *block = task_data->block;
-    consumer_args_t *args = task_data->args;
-
-    struct timespec start, end;
-    clock_gettime(CLOCK_MONOTONIC, &start);
-
-    char **local_results = malloc(block->count * sizeof(char*));
-    if (!local_results)
-    {
-        // handle error
-        for (int i = 0; i < block->count; i++)
-        {
-            free(block->words[i]);
-        }
-        free(block->words);
-        free(block);
-        free(task_data);
-        return;
-    }
-
-    int local_word_count = 0;
-    for (int i = 0; i < block->count; i++)
-    {
-        if (can_type_word(block->words[i]))
-        {
-            local_results[local_word_count] = strdup(block->words[i]);
-            if (!local_results[local_word_count])
-            {
-                for (int j = 0; j < local_word_count; j++)
-                {
-                    free(local_results[j]);
-                }
-                free(local_results);
-                for (int i = 0; i < block->count; i++)
-                {
-                    free(block->words[i]);
-                }
-                free(block->words);
-                free(block);
-                free(task_data);
-                return;
-            }
-            local_word_count++;
-        }
-    }
-
-    clock_gettime(CLOCK_MONOTONIC, &end);
-    double elapsed = (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / 1e9;
-
-    pthread_mutex_lock(args->result_mutex);
-    if (local_word_count > 0)
-    {
-        int new_total = *(args->result_count) + local_word_count;
-        char **new_result_words = realloc(*(args->result_words), new_total * sizeof(char*));
-        if (new_result_words)
-        {
-            *(args->result_words) = new_result_words;
-            for (int i = 0; i < local_word_count; i++)
-            {
-                (*(args->result_words))[*(args->result_count) + i] = local_results[i];
-            }
-            *(args->result_count) = new_total;
-            *(args->total_count) += local_word_count;
-            *(args->timing_count) += elapsed;
-        } else // realloc failed: need to free local_results strings and array
-        {
-
-            for (int i = 0; i < local_word_count; i++)
-            {
-                free(local_results[i]);
-            }
-            free(local_results);
-
-            pthread_mutex_unlock(args->result_mutex);
-
-            for (int i = 0; i < block->count; i++)
-            {
-                free(block->words[i]);
-            }
-            free(block->words);
-            free(block);
-            free(task_data);
-            return;
-        }
-    }
-    // Free local_results array (but not the strings, because they are now in global array)
-    free(local_results);
-    pthread_mutex_unlock(args->result_mutex);
-
-    for (int i = 0; i < block->count; i++)
-    {
-        free(block->words[i]);
-    }
-    free(block->words);
-    free(block);
-    free(task_data);
-}
-
-/**
  * @brief Checks if two characters are adjacent on a QWERTY keyboard
  *
  * Determines whether the keys corresponding to characters 'a' and 'b'
@@ -250,4 +139,83 @@ unsigned int is_adjacent(char a, char b)
     }
 
     return adjacency_matrix[i][j];
+}
+
+/**
+ * @brief Filters typable words from input block
+ * @param input pointer to input word block (not modified)
+ * @return pointer to new word_block_t containing only typable words.
+ *         Caller must free the returned block and its words using
+ *         free_word_block().
+ * @note Returns NULL on allocation failure.
+ */
+word_block_t* filter_typable_words(const word_block_t *input)
+{
+    if (!input || input->count == 0)
+    {
+        // Return empty but valid block
+        word_block_t *empty = malloc(sizeof(word_block_t));
+        if (!empty) return NULL;
+        empty->words = NULL;
+        empty->count = 0;
+        return empty;
+    }
+
+    // First pass: count typable words
+    int typable_count = 0;
+    for (int i = 0; i < input->count; i++) {
+        if (can_type_word(input->words[i]))
+            typable_count++;
+    }
+
+    if (typable_count == 0)
+    {
+        word_block_t *empty = malloc(sizeof(word_block_t));
+        if (!empty) return NULL;
+        empty->words = NULL;
+        empty->count = 0;
+        return empty;
+    }
+
+    // Allocate result block
+    word_block_t *result = malloc(sizeof(word_block_t));
+    if (!result) return NULL;
+
+    result->words = malloc(typable_count * sizeof(char*));
+    if (!result->words) {
+        free(result);
+        return NULL;
+    }
+
+    // Second pass: copy typable words
+    int idx = 0;
+    for (int i = 0; i < input->count; i++) {
+        if (can_type_word(input->words[i])) {
+            result->words[idx] = strdup(input->words[i]);
+            if (!result->words[idx]) {
+                // Allocation failure – clean up already copied words
+                for (int j = 0; j < idx; j++)
+                    free(result->words[j]);
+                free(result->words);
+                free(result);
+                return NULL;
+            }
+            idx++;
+        }
+    }
+    result->count = typable_count;
+    return result;
+}
+
+/**
+ * @brief Frees memory allocated for a word block
+ * @param block pointer to word_block_t to free
+ */
+void free_word_block(word_block_t *block)
+{
+    if (!block) return;
+    for (int i = 0; i < block->count; i++)
+        free(block->words[i]);
+    free(block->words);
+    free(block);
 }
