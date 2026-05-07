@@ -6,6 +6,21 @@
 #include "thpool/thpool.h"
 #include "word_counter/word_counter.h"
 
+/**
+ * @brief Worker function executed by each thread in the pool.
+ *
+ * Receives a task (task_data_t) containing a word block and pointers to shared data.
+ *
+ * @param arg Pointer to a task_data_t allocated in main before adding the task to the thread pool.
+ *
+ * @note The function assumes that the input word block and all its strings are allocated via malloc/strdup.
+ * @note After calling filter_typable_words(), the strings from the original block are freed.
+ * @note If realloc of the global result array fails, the filtered block is completely freed,
+ *       but previously accumulated results remain intact.
+ *
+ * @warning This function is intended for use only within the thread pool (thpool) context.
+ *          The result mutex must be initialized before any call.
+ */
 static void thread_work(void *arg)
 {
     task_data_t *task = (task_data_t*)arg;
