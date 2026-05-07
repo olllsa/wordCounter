@@ -6,6 +6,22 @@
 #include "thpool/thpool.h"
 #include "word_counter/word_counter.h"
 
+/**
+ * @brief Main function - reads dictionary and finds typable words
+ *
+ * Program workflow:
+ * 1. Initialize QWERTY adjacency matrix
+ * 2. Create thread pool with number of threads equal to CPU cores
+ * 3. Read dictionary file in blocks of LINE_BLOCK_SIZE words
+ * 4. Submit each block as a task to the thread pool
+ * 5. Wait for all tasks to complete
+ * 6. Display results: total processing time, count of typable words,
+ *    and list of typable words (first 100 if more than 100)
+ *
+ * @param argc - argument count
+ * @param argv - argument vector (argv[1] = dictionary file path)
+ * @return 0 on success, 1 on error
+ */
 int main(int argc, char *argv[])
 {
     if (argc < 2)
@@ -18,7 +34,6 @@ int main(int argc, char *argv[])
 
     int num_cores = sysconf(_SC_NPROCESSORS_ONLN);
     if (num_cores < 1) num_cores = 1;
-    //num_cores = 100;
 
     printf("Using %d worker threads.\n", num_cores);
 
