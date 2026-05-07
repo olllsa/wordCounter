@@ -218,6 +218,27 @@ void process_block(void *arg)
     free(task_data);
 }
 
+/**
+ * @brief Checks if two characters are adjacent on a QWERTY keyboard
+ *
+ * Determines whether the keys corresponding to characters 'a' and 'b'
+ * are adjacent according to the precomputed QWERTY layout matrix.
+ * Adjacency includes horizontal neighbors, vertical neighbors,
+ * and the same key (self-adjacency).
+ *
+ * Only lowercase English letters from 'a' to 'z' are supported.
+ *
+ * @param a - first character (must be in range 'a'..'z')
+ * @param b - second character (must be in range 'a'..'z')
+ * @return unsigned int - 1 if keys are adjacent, 0 otherwise
+ *
+ * @note This function uses the global adjacency_matrix initialized by
+ *       init_qwerty_layout(). Ensure init_qwerty_layout() is called before
+ *       using this function.
+ *
+ * @warning If either character is outside the 'a'..'z' range, the function
+ *          returns 0.
+ */
 unsigned int is_adjacent(char a, char b)
 {
     int i = CHAR_TO_INDEX(a);
