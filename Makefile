@@ -13,6 +13,9 @@ OBJECTS = main.o \
           thpool.o \
           word_counter.o
 TARGET = counter
+TEST_TARGET = test_runner
+TEST_SOURCES = test_word_counter.c $(WORD_COUNTER_DIR)/word_counter.c
+
 
 all: $(TARGET)
 
@@ -40,6 +43,12 @@ run: $(TARGET)
 
 valgrind: $(TARGET)
         valgrind --tool=memcheck --track-fds=yes --trace-children=yes --track-origins=yes --leak-check=full --show-leak-kinds=all ./$(TARGET) $(DICT)
+
+test: $(TEST_TARGET)
+	./$(TEST_TARGET)
+	
+$(TEST_TARGET): $(TEST_SOURCES)
+	$(CC) $(CFLAGS) $(INCLUDES) -DUSE_SIMPLE_TESTS -o $@ $^
 
 debug: CFLAGS += -g -DDEBUG -O0
 debug: rebuild
