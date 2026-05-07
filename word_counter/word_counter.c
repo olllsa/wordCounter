@@ -6,7 +6,7 @@
 #include <unistd.h>
 #include <time.h>
 
-int adjacency_matrix[26][26];
+static int adjacency_matrix[26][26];
 
 /**
  * @brief Initializes the QWERTY keyboard adjacency matrix
@@ -174,4 +174,17 @@ void process_block(void *arg)
     free(block->words);
     free(block);
     free(task_data);
+}
+
+unsigned int is_adjacent(char a, char b)
+{
+    int i = CHAR_TO_INDEX(a);
+    int j = CHAR_TO_INDEX(b);
+
+    if (i < 0 || i > 25 || j < 0 || j > 25)
+    {
+        return 0;
+    }
+
+    return adjacency_matrix[i][j];
 }

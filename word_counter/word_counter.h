@@ -8,8 +8,6 @@
 
 #define CHAR_TO_INDEX(c) ((c) - 'a')
 
-extern int adjacency_matrix[26][26];
-
 /**
  * @brief Structure for storing a block of words
  * @param words - array of word strings
@@ -66,5 +64,11 @@ int can_type_word(const char *word);
  * @param arg - pointer to task_data_t structure containing block and arguments
  */
 void process_block(void *arg);
+
+/**
+ * @brief Processes a block of words in a worker thread
+ * @param arg - pointer to task_data_t structure containing block and arguments
+ */
+unsigned int is_adjacent(char a, char b);
 
 #endif

@@ -104,33 +104,33 @@ TEST(test_horizontal_adjacency)
     setup_test_environment();
 
     // Test horizontal adjacencies in top row
-    TEST_ASSERT_TRUE(adjacency_matrix[CHAR_TO_INDEX('q')][CHAR_TO_INDEX('w')]);
-    TEST_ASSERT_TRUE(adjacency_matrix[CHAR_TO_INDEX('w')][CHAR_TO_INDEX('e')]);
-    TEST_ASSERT_TRUE(adjacency_matrix[CHAR_TO_INDEX('e')][CHAR_TO_INDEX('r')]);
-    TEST_ASSERT_TRUE(adjacency_matrix[CHAR_TO_INDEX('r')][CHAR_TO_INDEX('t')]);
-    TEST_ASSERT_TRUE(adjacency_matrix[CHAR_TO_INDEX('t')][CHAR_TO_INDEX('y')]);
-    TEST_ASSERT_TRUE(adjacency_matrix[CHAR_TO_INDEX('y')][CHAR_TO_INDEX('u')]);
-    TEST_ASSERT_TRUE(adjacency_matrix[CHAR_TO_INDEX('u')][CHAR_TO_INDEX('i')]);
-    TEST_ASSERT_TRUE(adjacency_matrix[CHAR_TO_INDEX('i')][CHAR_TO_INDEX('o')]);
-    TEST_ASSERT_TRUE(adjacency_matrix[CHAR_TO_INDEX('o')][CHAR_TO_INDEX('p')]);
+    TEST_ASSERT_TRUE(is_adjacent('q', 'w'));
+    TEST_ASSERT_TRUE(is_adjacent('w', 'e'));
+    TEST_ASSERT_TRUE(is_adjacent('e', 'r'));
+    TEST_ASSERT_TRUE(is_adjacent('r', 't'));
+    TEST_ASSERT_TRUE(is_adjacent('t', 'y'));
+    TEST_ASSERT_TRUE(is_adjacent('y', 'u'));
+    TEST_ASSERT_TRUE(is_adjacent('u', 'i'));
+    TEST_ASSERT_TRUE(is_adjacent('i', 'o'));
+    TEST_ASSERT_TRUE(is_adjacent('o', 'p'));
 
     // Test horizontal adjacencies in middle row
-    TEST_ASSERT_TRUE(adjacency_matrix[CHAR_TO_INDEX('a')][CHAR_TO_INDEX('s')]);
-    TEST_ASSERT_TRUE(adjacency_matrix[CHAR_TO_INDEX('s')][CHAR_TO_INDEX('d')]);
-    TEST_ASSERT_TRUE(adjacency_matrix[CHAR_TO_INDEX('d')][CHAR_TO_INDEX('f')]);
-    TEST_ASSERT_TRUE(adjacency_matrix[CHAR_TO_INDEX('f')][CHAR_TO_INDEX('g')]);
-    TEST_ASSERT_TRUE(adjacency_matrix[CHAR_TO_INDEX('g')][CHAR_TO_INDEX('h')]);
-    TEST_ASSERT_TRUE(adjacency_matrix[CHAR_TO_INDEX('h')][CHAR_TO_INDEX('j')]);
-    TEST_ASSERT_TRUE(adjacency_matrix[CHAR_TO_INDEX('j')][CHAR_TO_INDEX('k')]);
-    TEST_ASSERT_TRUE(adjacency_matrix[CHAR_TO_INDEX('k')][CHAR_TO_INDEX('l')]);
+    TEST_ASSERT_TRUE(is_adjacent('a', 's'));
+    TEST_ASSERT_TRUE(is_adjacent('s', 'd'));
+    TEST_ASSERT_TRUE(is_adjacent('d', 'f'));
+    TEST_ASSERT_TRUE(is_adjacent('f', 'g'));
+    TEST_ASSERT_TRUE(is_adjacent('g', 'h'));
+    TEST_ASSERT_TRUE(is_adjacent('h', 'j'));
+    TEST_ASSERT_TRUE(is_adjacent('j', 'k'));
+    TEST_ASSERT_TRUE(is_adjacent('k', 'l'));
 
     // Test horizontal adjacencies in bottom row
-    TEST_ASSERT_TRUE(adjacency_matrix[CHAR_TO_INDEX('z')][CHAR_TO_INDEX('x')]);
-    TEST_ASSERT_TRUE(adjacency_matrix[CHAR_TO_INDEX('x')][CHAR_TO_INDEX('c')]);
-    TEST_ASSERT_TRUE(adjacency_matrix[CHAR_TO_INDEX('c')][CHAR_TO_INDEX('v')]);
-    TEST_ASSERT_TRUE(adjacency_matrix[CHAR_TO_INDEX('v')][CHAR_TO_INDEX('b')]);
-    TEST_ASSERT_TRUE(adjacency_matrix[CHAR_TO_INDEX('b')][CHAR_TO_INDEX('n')]);
-    TEST_ASSERT_TRUE(adjacency_matrix[CHAR_TO_INDEX('n')][CHAR_TO_INDEX('m')]);
+    TEST_ASSERT_TRUE(is_adjacent('z', 'x'));
+    TEST_ASSERT_TRUE(is_adjacent('x', 'c'));
+    TEST_ASSERT_TRUE(is_adjacent('c', 'v'));
+    TEST_ASSERT_TRUE(is_adjacent('v', 'b'));
+    TEST_ASSERT_TRUE(is_adjacent('b', 'n'));
+    TEST_ASSERT_TRUE(is_adjacent('n', 'm'));
 }
 
 TEST(test_vertical_adjacency)
@@ -138,24 +138,24 @@ TEST(test_vertical_adjacency)
     setup_test_environment();
 
     // Test vertical adjacencies between row 0 and row 1
-    TEST_ASSERT_TRUE(adjacency_matrix[CHAR_TO_INDEX('q')][CHAR_TO_INDEX('a')]);
-    TEST_ASSERT_TRUE(adjacency_matrix[CHAR_TO_INDEX('w')][CHAR_TO_INDEX('s')]);
-    TEST_ASSERT_TRUE(adjacency_matrix[CHAR_TO_INDEX('e')][CHAR_TO_INDEX('d')]);
-    TEST_ASSERT_TRUE(adjacency_matrix[CHAR_TO_INDEX('r')][CHAR_TO_INDEX('f')]);
-    TEST_ASSERT_TRUE(adjacency_matrix[CHAR_TO_INDEX('t')][CHAR_TO_INDEX('g')]);
-    TEST_ASSERT_TRUE(adjacency_matrix[CHAR_TO_INDEX('y')][CHAR_TO_INDEX('h')]);
-    TEST_ASSERT_TRUE(adjacency_matrix[CHAR_TO_INDEX('u')][CHAR_TO_INDEX('j')]);
-    TEST_ASSERT_TRUE(adjacency_matrix[CHAR_TO_INDEX('i')][CHAR_TO_INDEX('k')]);
-    TEST_ASSERT_TRUE(adjacency_matrix[CHAR_TO_INDEX('o')][CHAR_TO_INDEX('l')]);
+    TEST_ASSERT_TRUE(is_adjacent('q', 'a'));
+    TEST_ASSERT_TRUE(is_adjacent('w', 's'));
+    TEST_ASSERT_TRUE(is_adjacent('e', 'd'));
+    TEST_ASSERT_TRUE(is_adjacent('r', 'f'));
+    TEST_ASSERT_TRUE(is_adjacent('t', 'g'));
+    TEST_ASSERT_TRUE(is_adjacent('y', 'h'));
+    TEST_ASSERT_TRUE(is_adjacent('u', 'j'));
+    TEST_ASSERT_TRUE(is_adjacent('i', 'k'));
+    TEST_ASSERT_TRUE(is_adjacent('o', 'l'));
 
     // Test vertical adjacencies between row 1 and row 2
-    TEST_ASSERT_TRUE(adjacency_matrix[CHAR_TO_INDEX('a')][CHAR_TO_INDEX('z')]);
-    TEST_ASSERT_TRUE(adjacency_matrix[CHAR_TO_INDEX('s')][CHAR_TO_INDEX('x')]);
-    TEST_ASSERT_TRUE(adjacency_matrix[CHAR_TO_INDEX('d')][CHAR_TO_INDEX('c')]);
-    TEST_ASSERT_TRUE(adjacency_matrix[CHAR_TO_INDEX('f')][CHAR_TO_INDEX('v')]);
-    TEST_ASSERT_TRUE(adjacency_matrix[CHAR_TO_INDEX('g')][CHAR_TO_INDEX('b')]);
-    TEST_ASSERT_TRUE(adjacency_matrix[CHAR_TO_INDEX('h')][CHAR_TO_INDEX('n')]);
-    TEST_ASSERT_TRUE(adjacency_matrix[CHAR_TO_INDEX('j')][CHAR_TO_INDEX('m')]);
+    TEST_ASSERT_TRUE(is_adjacent('a', 'z'));
+    TEST_ASSERT_TRUE(is_adjacent('s', 'x'));
+    TEST_ASSERT_TRUE(is_adjacent('d', 'c'));
+    TEST_ASSERT_TRUE(is_adjacent('f', 'v'));
+    TEST_ASSERT_TRUE(is_adjacent('g', 'b'));
+    TEST_ASSERT_TRUE(is_adjacent('h', 'n'));
+    TEST_ASSERT_TRUE(is_adjacent('j', 'm'));
 }
 
 TEST(test_self_adjacency)
@@ -165,8 +165,7 @@ TEST(test_self_adjacency)
     // Every key should be adjacent to itself
     for (char c = 'a'; c <= 'z'; c++)
     {
-        int idx = CHAR_TO_INDEX(c);
-        TEST_ASSERT_TRUE(adjacency_matrix[idx][idx]);
+        TEST_ASSERT_TRUE(is_adjacent(c, c));
     }
 }
 
@@ -175,11 +174,11 @@ TEST(test_non_adjacent_keys)
     setup_test_environment();
 
     // Test non-adjacent keys
-    TEST_ASSERT_FALSE(adjacency_matrix[CHAR_TO_INDEX('q')][CHAR_TO_INDEX('e')]);
-    TEST_ASSERT_FALSE(adjacency_matrix[CHAR_TO_INDEX('a')][CHAR_TO_INDEX('d')]);
-    TEST_ASSERT_FALSE(adjacency_matrix[CHAR_TO_INDEX('z')][CHAR_TO_INDEX('c')]);
-    TEST_ASSERT_FALSE(adjacency_matrix[CHAR_TO_INDEX('q')][CHAR_TO_INDEX('p')]);
-    TEST_ASSERT_FALSE(adjacency_matrix[CHAR_TO_INDEX('a')][CHAR_TO_INDEX('l')]);
+    TEST_ASSERT_FALSE(is_adjacent('q', 'e'));
+    TEST_ASSERT_FALSE(is_adjacent('a', 'd'));
+    TEST_ASSERT_FALSE(is_adjacent('z', 'c'));
+    TEST_ASSERT_FALSE(is_adjacent('q', 'p'));
+    TEST_ASSERT_FALSE(is_adjacent('a', 'l'));
 }
 
 /* ============================================================ */
