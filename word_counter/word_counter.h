@@ -8,22 +8,12 @@
 
 #define CHAR_TO_INDEX(c) ((c) - 'a')
 
-/**
- * @brief Structure for storing a block of words
- * @param words - array of word strings
- * @param count - number of words in the block
- */
 typedef struct
 {
     char **words;
     int count;
 } word_block_t;
 
-/**
- * @brief Structure representing a task for the thread pool
- * @param block - block of words to process
- * @param args - consumer arguments shared between threads
- */
 typedef struct
 {
     word_block_t *block;
