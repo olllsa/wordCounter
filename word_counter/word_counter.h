@@ -19,7 +19,6 @@ typedef struct
     word_block_t *block;
     char ***result_words;
     int *result_count;
-    double *timing_count;
     pthread_mutex_t *result_mutex;
 } task_data_t;
 

@@ -24,14 +24,9 @@
 static void thread_work(void *arg)
 {
     task_data_t *task = (task_data_t*)arg;
-    struct timespec start, end;
-    clock_gettime(CLOCK_MONOTONIC, &start);
 
     word_block_t *filtered = filter_typable_words(task->block);
     free_word_block(task->block);
-
-    clock_gettime(CLOCK_MONOTONIC, &end);
-    double elapsed = (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / 1e9;
 
     if (filtered && filtered->count > 0)
     {
@@ -43,7 +38,6 @@ static void thread_work(void *arg)
             *(task->result_words) = new_words;
             memcpy(new_words + *(task->result_count), filtered->words, filtered->count * sizeof(char*));
             *(task->result_count) = new_total;
-            *(task->timing_count) += elapsed;
             free(filtered->words);
             free(filtered);
         } else
@@ -78,6 +72,8 @@ static void thread_work(void *arg)
  */
 int main(int argc, char *argv[])
 {
+    struct timespec start, end;
+
     if (argc < 2)
     {
         fprintf(stderr, "Usage: %s <dictionary_file>\n", argv[0]);
@@ -94,7 +90,6 @@ int main(int argc, char *argv[])
 
     char **result_words = NULL;
     int result_count = 0;
-    double timing_count = 0;
     pthread_mutex_t result_mutex = PTHREAD_MUTEX_INITIALIZER;
 
     FILE *file = fopen(argv[1], "r");
@@ -109,6 +104,8 @@ int main(int argc, char *argv[])
     word_block_t *current = malloc(sizeof(word_block_t));
     current->words = malloc(LINE_BLOCK_SIZE * sizeof(char*));
     current->count = 0;
+
+    clock_gettime(CLOCK_MONOTONIC, &start);
 
     while (fgets(line, sizeof(line), file))
     {
@@ -129,7 +126,6 @@ int main(int argc, char *argv[])
             task->block = current;
             task->result_words = &result_words;
             task->result_count = &result_count;
-            task->timing_count = &timing_count;
             task->result_mutex = &result_mutex;
             thpool_add_work(thpool, thread_work, task);
 
@@ -145,7 +141,6 @@ int main(int argc, char *argv[])
         task->block = current;
         task->result_words = &result_words;
         task->result_count = &result_count;
-        task->timing_count = &timing_count;
         task->result_mutex = &result_mutex;
         thpool_add_work(thpool, thread_work, task);
     } else
@@ -155,10 +150,13 @@ int main(int argc, char *argv[])
     }
 
     fclose(file);
+    clock_gettime(CLOCK_MONOTONIC, &end);
+    double elapsed = (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / 1e9;
+
     thpool_wait(thpool);
     thpool_destroy(thpool);
 
-    printf("Total time for analyse words that can be typed: %.10f\n", timing_count);
+    printf("Total time for analyse words that can be typed: %.10f\n", elapsed);
     printf("Total words that can be typed: %d\n", result_count);
 
     if (result_count > 0 && result_count <= 100)
