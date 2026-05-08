@@ -43,7 +43,6 @@ static void thread_work(void *arg)
             *(task->result_words) = new_words;
             memcpy(new_words + *(task->result_count), filtered->words, filtered->count * sizeof(char*));
             *(task->result_count) = new_total;
-            *(task->total_count) += filtered->count;
             *(task->timing_count) += elapsed;
             free(filtered->words);
             free(filtered);
@@ -93,7 +92,6 @@ int main(int argc, char *argv[])
     printf("Using %d worker threads.\n", num_cores);
     threadpool thpool = thpool_init(num_cores);
 
-    int total_typable = 0;
     char **result_words = NULL;
     int result_count = 0;
     double timing_count = 0;
@@ -129,7 +127,6 @@ int main(int argc, char *argv[])
         {
             task_data_t *task = malloc(sizeof(task_data_t));
             task->block = current;
-            task->total_count = &total_typable;
             task->result_words = &result_words;
             task->result_count = &result_count;
             task->timing_count = &timing_count;
@@ -146,7 +143,6 @@ int main(int argc, char *argv[])
     {
         task_data_t *task = malloc(sizeof(task_data_t));
         task->block = current;
-        task->total_count = &total_typable;
         task->result_words = &result_words;
         task->result_count = &result_count;
         task->timing_count = &timing_count;
@@ -163,16 +159,16 @@ int main(int argc, char *argv[])
     thpool_destroy(thpool);
 
     printf("Total time for analyse words that can be typed: %.10f\n", timing_count);
-    printf("Total words that can be typed: %d\n", total_typable);
+    printf("Total words that can be typed: %d\n", result_count);
 
-    if (total_typable > 0 && total_typable <= 100)
+    if (result_count > 0 && result_count <= 100)
     {
         printf("List of words:\n");
         for (int i = 0; i < result_count; i++)
         {
             printf("  %s\n", result_words[i]);
         }
-    } else if (total_typable > 100)
+    } else if (result_count > 100)
     {
         printf("(List too long, showing first 100 words)\n");
         for (int i = 0; i < 100; i++)

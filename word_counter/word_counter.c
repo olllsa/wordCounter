@@ -155,7 +155,10 @@ word_block_t* filter_typable_words(const word_block_t *input)
     {
         // Return empty but valid block
         word_block_t *empty = malloc(sizeof(word_block_t));
-        if (!empty) return NULL;
+        if (!empty)
+        {
+            return NULL;
+        }
         empty->words = NULL;
         empty->count = 0;
         return empty;
@@ -163,15 +166,21 @@ word_block_t* filter_typable_words(const word_block_t *input)
 
     // First pass: count typable words
     int typable_count = 0;
-    for (int i = 0; i < input->count; i++) {
+    for (int i = 0; i < input->count; i++)
+    {
         if (can_type_word(input->words[i]))
+        {
             typable_count++;
+        }
     }
 
     if (typable_count == 0)
     {
         word_block_t *empty = malloc(sizeof(word_block_t));
-        if (!empty) return NULL;
+        if (!empty)
+        {
+            return NULL;
+        }
         empty->words = NULL;
         empty->count = 0;
         return empty;
@@ -179,23 +188,32 @@ word_block_t* filter_typable_words(const word_block_t *input)
 
     // Allocate result block
     word_block_t *result = malloc(sizeof(word_block_t));
-    if (!result) return NULL;
+    if (!result)
+    {
+        return NULL;
+    }
 
     result->words = malloc(typable_count * sizeof(char*));
-    if (!result->words) {
+    if (!result->words)
+    {
         free(result);
         return NULL;
     }
 
     // Second pass: copy typable words
     int idx = 0;
-    for (int i = 0; i < input->count; i++) {
-        if (can_type_word(input->words[i])) {
+    for (int i = 0; i < input->count; i++)
+    {
+        if (can_type_word(input->words[i]))
+        {
             result->words[idx] = strdup(input->words[i]);
-            if (!result->words[idx]) {
+            if (!result->words[idx])
+            {
                 // Allocation failure – clean up already copied words
                 for (int j = 0; j < idx; j++)
+                {
                     free(result->words[j]);
+                }
                 free(result->words);
                 free(result);
                 return NULL;
@@ -213,9 +231,14 @@ word_block_t* filter_typable_words(const word_block_t *input)
  */
 void free_word_block(word_block_t *block)
 {
-    if (!block) return;
+    if (!block)
+    {
+        return;
+    }
     for (int i = 0; i < block->count; i++)
+    {
         free(block->words[i]);
+    }
     free(block->words);
     free(block);
 }

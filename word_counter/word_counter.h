@@ -17,7 +17,6 @@ typedef struct
 typedef struct
 {
     word_block_t *block;
-    int *total_count;
     char ***result_words;
     int *result_count;
     double *timing_count;
