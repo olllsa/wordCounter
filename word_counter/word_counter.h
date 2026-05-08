@@ -20,23 +20,6 @@ typedef struct
 } word_block_t;
 
 /**
- * @brief Structure containing shared data for worker threads
- * @param total_count - pointer to total count of typable words
- * @param result_words - pointer to array of result words
- * @param result_count - pointer to current number of results
- * @param timing_count - pointer to accumulated processing time
- * @param result_mutex - mutex for synchronizing access to results
- */
-typedef struct
-{
-    int *total_count;
-    char ***result_words;
-    int *result_count;
-    double *timing_count;
-    pthread_mutex_t *result_mutex;
-} consumer_args_t;
-
-/**
  * @brief Structure representing a task for the thread pool
  * @param block - block of words to process
  * @param args - consumer arguments shared between threads
